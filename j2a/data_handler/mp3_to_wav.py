@@ -39,7 +39,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # wav_path = "/home/jacob/uniprojects/data_p10/music_data/wav_files"
     wav_path = args.wav_path
     conv = convertor()
     conv.convert_json(wav_path)

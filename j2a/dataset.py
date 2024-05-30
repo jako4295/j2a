@@ -167,7 +167,7 @@ def text_2_ids_and_attention_mask(
 if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
     dataset = MusicDataset(
-        "/Users/jakobolsen/Documents/4_uni/10_semester/github/P10/data/train-test_2024-04-05_11-13-56/train.csv",
+        "j2a/data/train-test_2024-04-05_11-13-56/train.csv",
         tokenizer,
     )
     print(dataset[0])

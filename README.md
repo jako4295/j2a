@@ -1,4 +1,4 @@
-# P10
+# j2a
 ![J2A](https://img.shields.io/badge/J2A-Music%20Captioning-blue)
 
 This repository is used for creating a multimodal LLM used for generating music captions given an audio file (currently only supported by .wav files). The currently available models are found in the table below. For more information about the models we refer to [model_versions](./model_versions). Note that the code itself is under the Apache 2.0 license, but any models trained using the YouTube8M-MusicTextClips dataset are under the [Research-only, non-commercial Adobe Research License](./LICENSE2). However, the MusicCaps dataset is under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/) and can be used for commercial purposes.
@@ -30,8 +30,8 @@ This repository is used for creating a multimodal LLM used for generating music 
 ## <a name='Installation'></a>Installation
 For developer installation, run the following command in the terminal:
 ```bash
-git clone https://github.com/ahll19/P10.git
-pip install -e P10/
+git clone https://github.com/jako4295/j2a.git
+pip install -e j2a/
 ```
 
 ## <a name='Usage'></a>Usage
@@ -90,7 +90,7 @@ To extract the data create a Python environment and install the following packag
 pip install -r requirements_datagen.txt
 ```
 > [!NOTE]  
-> If you can't import j2a you need to run the `pip install -e P10/`
+> If you can't import j2a you need to run the `pip install -e j2a/`
 
 
 Go to the `llm_tolls/data_handler` folder. To extract the data run 
@@ -99,7 +99,7 @@ python <path/to/youtube_download.py> --data_enum <database> --output <path/to/ou
 ```
 where the `database` specify the database you want to extract data from (options are `musiccaps` and `youtube_8m`). For the output folder please use absolute path. An example of this is shown below:
 ```bash
-python j2a/data_handler/youtube_download.py --data_enum musiccaps --output data_p10/music_data/musiccaps
+python j2a/data_handler/youtube_download.py --data_enum musiccaps --output <path/to/output_folder>
 ```
 This will create `j2a/data_handler/.json_files/data_summary.json` and store the data in the specified folder. Note that some files are age-restricted and will not be downloaded.
 

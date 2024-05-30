@@ -328,7 +328,7 @@ if __name__ == "__main__":
     tts = TrainTestSplit(args.prompt_path)
     # tts.split(
     #     output_path=args.output_dir,
-    #     from_info_json="/home/jam/private/uni/P10/data/train/info.json",
+    #     from_info_json="j2a/data/train/info.json",
     # )
     tts.split(
         args.output_dir,
