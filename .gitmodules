@@ -1,0 +1,3 @@
+[submodule "j2a/encoder/mwmae_jax_official"]
+	path = j2a/encoder/mwmae_jax_official
+	url = https://github.com/jako4295/mwmae-jax-official.git
