@@ -1,7 +1,7 @@
 # j2a
 ![J2A](https://img.shields.io/badge/J2A-Music%20Captioning-blue)
 
-This repository is used for creating a multimodal LLM used for generating music captions given an audio file (currently only supported by .wav files). The currently available models are found in the table below. For more information about the models we refer to [model_versions](./model_versions). Note that the code itself is under the Apache 2.0 license, but any models trained using the YouTube8M-MusicTextClips dataset are under the [Research-only, non-commercial Adobe Research License](./LICENSE2). However, the MusicCaps dataset is under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/) and can be used for commercial purposes.
+This repository is used for creating a multimodal LLM used for generating music captions given an audio file (currently only supported by .wav files). The currently available models are found in the table below. For more information about the models, we refer to [model_versions](./model_versions). Note that the code itself is under the Apache 2.0 license, but any models trained using the YouTube8M-MusicTextClips dataset are under the [Research-only, non-commercial Adobe Research License](./LICENSE2). However, the MusicCaps dataset is under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/) and can be used for commercial purposes.
 
 <!--
 | Model name | Model link    |
