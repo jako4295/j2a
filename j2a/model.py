@@ -1,14 +1,15 @@
 import logging
 import os
+from datetime import datetime
+from pathlib import Path
 from typing import Tuple
 
 import torch  # type: ignore
 import torch.nn as nn  # type: ignore
-from datetime import datetime
-from transformers import (  # type: ignore
+from transformers import (
     AutoModelForCausalLM,
+    AutoTokenizer,  # type: ignore
     BitsAndBytesConfig,
-    AutoTokenizer,
     PreTrainedTokenizer,
     PreTrainedTokenizerFast,
 )
@@ -68,8 +69,9 @@ class Model(nn.Module):
 
         self.llm = llm
         self.audio_projector = audio_projector
+        self.update_llm = update_llm
 
-        if not update_llm:
+        if not self.update_llm:
             for p in self.llm.parameters():
                 p.requires_grad = False
 
@@ -90,6 +92,10 @@ class Model(nn.Module):
         save_dir = os.path.join(save_cfg.out_dir_path.__str__(), f"model_{stamp}")
         os.makedirs(save_dir)
 
+        if self.update_llm:
+            path = os.path.join(save_dir, "llm")
+            self.llm.save_pretrained(path)
+
         torch.save(
             self.audio_projector.state_dict(),
             os.path.join(save_dir, model_name),
@@ -107,8 +113,11 @@ class Model(nn.Module):
             os.path.join(save_dir, "time_in_sec.pt"),
         )
 
-    def load(self, model_path: str) -> None:
+    def load_projector_from_path(self, model_path: str | Path) -> None:
         self.audio_projector.load_state_dict(torch.load(model_path))
+
+    def load_llm_from_path(self, model_path: str | Path) -> None:
+        self.llm.from_pretrained(model_path)
 
     def forward(self, batch: Batch) -> Tuple[CausalLMOutputWithPast, int]:
         audio_encoding = batch["audio_encoding"]

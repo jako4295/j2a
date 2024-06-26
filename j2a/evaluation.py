@@ -3,29 +3,37 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-from j2a.model_interactor import ModelInteractor
-from j2a.model import Model, load_llm, AudioProjector
-
-from evaluate import load
 import torch
+
+from j2a.model import AudioProjector, Model, load_llm
+from j2a.model_interactor import ModelInteractor
 
 
 @dataclass
 class EvaluationArgs:
-    model_path: Path
+    projector_path: Path
     wav_file: Path
     prompt_file: Path | None
-    device: Optional[str] = "cuda"
     prompt: str | None
+    llm_path: Path | None
+    device: str = "cuda"
 
 
 def get_args() -> EvaluationArgs:
     parser = ArgumentParser("Driver code.")
 
     parser.add_argument(
-        "--model_path",
+        "--projector_path",
         type=str,
         required=True,
+        help=f"Path to model (file ending with .ph).",
+    )
+
+    parser.add_argument(
+        "--llm_path",
+        type=str,
+        required=False,
+        default=None,
         help=f"Path to model (file ending with .ph).",
     )
 
@@ -59,11 +67,17 @@ def get_args() -> EvaluationArgs:
         default=None,
         help=f"The prompt past to the model.",
     )
+
     args = parser.parse_args()
 
-    if not (model_path := Path(args.model_path)).exists():
+    if not (projector_path := Path(args.projector_path)).exists():
         raise FileNotFoundError(
-            f"Could not find {model_path}, instantiated by {args.model_path}"
+            f"Could not find {projector_path}, instantiated by {args.projector_path}"
+        )
+
+    if not (llm_path := Path(args.llm_path)).exists():
+        raise FileNotFoundError(
+            f"Could not find {llm_path}, instantiated by {args.llm_path}"
         )
 
     if not (wav_file := Path(args.wav_file)).exists():
@@ -85,7 +99,8 @@ def get_args() -> EvaluationArgs:
             )
 
     eval_args = EvaluationArgs(
-        model_path=model_path,
+        projector_path=projector_path,
+        llm_path=llm_path,
         wav_file=wav_file,
         prompt=prompt,
         prompt_file=pp,
@@ -96,7 +111,8 @@ def get_args() -> EvaluationArgs:
 
 
 def load_interactor(
-    eval_args: EvaluationArgs, model_id: str = "Open-Orca/Mistral-7B-OpenOrca"
+    eval_args: EvaluationArgs,
+    model_id: str = "Open-Orca/Mistral-7B-OpenOrca",
 ) -> ModelInteractor:
     _, llm = load_llm(model_id=model_id)
 
@@ -106,7 +122,10 @@ def load_interactor(
     model = Model(audio_projector.to(torch.bfloat16), llm, False)
 
     model_interactor = ModelInteractor(
-        model, model_path=eval_args.model_path, device=eval_args.device
+        model,
+        projector_path=eval_args.projector_path,
+        llm_path=eval_args.llm_path,
+        device=eval_args.device,
     )
 
     return model_interactor

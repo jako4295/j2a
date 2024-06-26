@@ -1,21 +1,20 @@
 import time
 from contextlib import contextmanager
+from functools import partial
 from typing import Any, Generator, List, Tuple
-import numpy as np  # type: ignore
 
+import numpy as np  # type: ignore
 import torch  # type: ignore
 import torch.nn as nn  # type: ignore
 from torch import optim
-from torch.utils.data import DataLoader  # type: ignore
 from torch.amp import autocast  # type: ignore
-from functools import partial
+from torch.utils.data import DataLoader  # type: ignore
 from transformers.modeling_outputs import CausalLMOutputWithPast  # type: ignore
 
-from j2a.dataset import MusicDataset
+from j2a.dataset import Batch, MusicDataset
+from j2a.model import Model
 from j2a.trainer.save_cfg import SaveCfg
 from j2a.trainer.train_cfg import TrainerCfg
-from j2a.model import Model
-from j2a.dataset import Batch
 
 
 class Trainer:
@@ -66,6 +65,9 @@ class Trainer:
             train_losses = []
             # <train>
             for i, local_batch in enumerate(self.train_data_loader):
+                if self.model.update_llm:
+                    # To make sure there are no nan's
+                    self.model.half()
                 # TODO: Consider constructing a Batch typeddict instead of dict
                 # Can be done by _batch ={for...}; batch = _batch(**_batch)
                 _batch = {
@@ -107,6 +109,9 @@ class Trainer:
                 with timing_context(time_backprop):
                     self.optimizer.zero_grad()
                     loss.backward()
+                    if self.model.update_llm:
+                        # Change to full precision
+                        self.model.float()
                     self.optimizer.step()
 
                 trn_loss = loss.detach().cpu()
@@ -136,6 +141,8 @@ class Trainer:
                 eval_losses = []
                 with torch.no_grad():
                     for local_batch in self.eval_data_loader:
+                        if self.model.update_llm:
+                            self.model.half()
                         # Transfer to GPU
                         _batch = {
                             k: v.to(self.device)
