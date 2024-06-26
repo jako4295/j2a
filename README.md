@@ -4,6 +4,8 @@
 
 This repository is used for creating a multimodal LLM-based model used for generating music captions given an audio file (currently only supported by .wav files). Note that the code itself is under the Apache 2.0 license, but any models trained using the YouTube8M-MusicTextClips dataset are under the [Research-only, non-commercial Adobe Research License](./LICENSE2). However, the MusicCaps dataset is under the [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/) and can be used for commercial purposes.
 
+**Documentation page is found [here](https://jako4295.github.io/docs/j2a/docs/build/html/index.html).**
+
 <!--
 | Model name | Model link    |
 | ---------- | ------------- |
