@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>j2a.encoder.mwmae_jax_official.stats_aggregation &mdash; j2a 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            j2a
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">j2a</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">j2a.encoder.mwmae_jax_official.stats_aggregation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for j2a.encoder.mwmae_jax_official.stats_aggregation</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span> <span class="k">as</span> <span class="n">st</span>
+
+
+<div class="viewcode-block" id="parse">
+<a class="viewcode-back" href="../../../../rst/j2a.encoder.mwmae_jax_official.stats_aggregation.html#j2a.encoder.mwmae_jax_official.stats_aggregation.parse">[docs]</a>
+<span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;test&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">][</span><span class="s1">&#39;test_score&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s2">&quot;aggregated_scores&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;aggregated_scores&#39;</span><span class="p">][</span><span class="s1">&#39;test_score_mean&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;not found &quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sc</span></div>
+
+
+
+<div class="viewcode-block" id="get_info">
+<a class="viewcode-back" href="../../../../rst/j2a.encoder.mwmae_jax_official.stats_aggregation.html#j2a.encoder.mwmae_jax_official.stats_aggregation.get_info">[docs]</a>
+<span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_bugfix&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">splitted</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">splitted</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">exp</span> <span class="o">=</span> <span class="n">splitted</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">exp</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>
+    <span class="n">exp_info</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># print(exp_info)</span>
+    <span class="k">if</span> <span class="s2">&quot;r&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exp_info</span><span class="p">:</span>
+        <span class="n">runid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">exp_info</span><span class="p">)</span>
+        <span class="n">exp</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># print(&quot;HAD RUN ID==1&quot;)</span>
+        <span class="n">runid</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">runid</span><span class="p">)</span>
+
+    <span class="n">ssl_run_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">exp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ssl_run_id</span><span class="p">)</span>
+    <span class="n">exp</span> <span class="o">=</span> <span class="n">exp</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="n">exp</span><span class="p">,</span>
+        <span class="s2">&quot;ssl_run&quot;</span><span class="p">:</span> <span class="n">ssl_run_id</span><span class="p">,</span>
+        <span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="n">runid</span><span class="p">,</span>
+        <span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="n">dataset</span>
+    <span class="p">}</span></div>
+
+    <span class="c1"># return exp, ssl_run_id, runid, dataset</span>
+
+
+<div class="viewcode-block" id="get_stats">
+<a class="viewcode-back" href="../../../../rst/j2a.encoder.mwmae_jax_official.stats_aggregation.html#j2a.encoder.mwmae_jax_official.stats_aggregation.get_stats">[docs]</a>
+<span class="k">def</span> <span class="nf">get_stats</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
+    <span class="n">l</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">interval</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">scale</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">sem</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="n">l</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">h</span> <span class="o">-</span> <span class="n">s</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">,</span> <span class="n">s</span></div>
+
+
+
+<div class="viewcode-block" id="get_overall_stats">
+<a class="viewcode-back" href="../../../../rst/j2a.encoder.mwmae_jax_official.stats_aggregation.html#j2a.encoder.mwmae_jax_official.stats_aggregation.get_overall_stats">[docs]</a>
+<span class="k">def</span> <span class="nf">get_overall_stats</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">ssl_run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">subdf</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;exp&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">exp</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">dataset</span><span class="p">:</span>
+        <span class="n">subdf</span> <span class="o">=</span> <span class="n">subdf</span><span class="p">[</span><span class="n">subdf</span><span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dataset</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">ssl_run</span><span class="p">:</span>
+        <span class="n">subdf</span> <span class="o">=</span> <span class="n">subdf</span><span class="p">[</span><span class="n">subdf</span><span class="p">[</span><span class="s1">&#39;ssl_run&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ssl_run</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">run</span><span class="p">:</span>
+        <span class="n">subdf</span> <span class="o">=</span> <span class="n">subdf</span><span class="p">[</span><span class="n">subdf</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">run</span><span class="p">]</span>
+
+    <span class="n">mean</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="n">get_stats</span><span class="p">(</span><span class="n">subdf</span><span class="p">[</span><span class="s1">&#39;scores&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">subdf</span></div>
+
+
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--base_dir&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--output_dir&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*/test.predicted-scores.json&quot;</span><span class="p">))</span>
+    <span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">rec</span> <span class="o">=</span> <span class="n">get_info</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;scores&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sc</span>
+        <span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">records</span><span class="p">)</span>
+    <span class="n">unique_exps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;exp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">exp_map</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_exps</span><span class="p">)):</span>
+        <span class="n">exp_map</span><span class="p">[</span><span class="n">unique_exps</span><span class="p">[</span><span class="n">ix</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ix</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;mapped_exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;exp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">exp_map</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+    <span class="n">unique_datasets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">exp_dset</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_datasets</span><span class="p">)):</span>
+        <span class="n">exp_dset</span><span class="p">[</span><span class="n">unique_datasets</span><span class="p">[</span><span class="n">ix</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ix</span>
+
+    <span class="n">dset_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;beijing_opera-v1.0-hear2021-full&quot;</span><span class="p">:</span> <span class="s2">&quot;Beijing-Opera&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;esc50-v2.0.0-full&quot;</span><span class="p">:</span> <span class="s2">&quot;ESC-50&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;libricount-v1.0.0-hear2021-full&quot;</span><span class="p">:</span> <span class="s2">&quot;LibriCount&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mridangam_stroke-v1.5-full&quot;</span><span class="p">:</span> <span class="s2">&quot;Mridangam-S&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mridangam_tonic-v1.5-full&quot;</span><span class="p">:</span> <span class="s2">&quot;Mridangam-T&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nsynth_pitch-v2.2.3-5h&quot;</span><span class="p">:</span> <span class="s2">&quot;NSynth-Pitch-5h&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;speech_commands-v0.0.2-5h&quot;</span><span class="p">:</span> <span class="s2">&quot;SpeechCommands-5h&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tfds_crema_d-1.0.0-full&quot;</span><span class="p">:</span> <span class="s2">&quot;CREMA-D&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;vox_lingua_top10-hear2021-full&quot;</span><span class="p">:</span> <span class="s2">&quot;VoxLingua&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fsd50k-v1.0-full&quot;</span><span class="p">:</span> <span class="s2">&quot;FSD50k&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gunshot_triangulation-v1.0-full&quot;</span><span class="p">:</span> <span class="s2">&quot;Gunshot&quot;</span>
+    <span class="p">}</span>
+    <span class="n">output_fld</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">output_dir</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_fld</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">uq_exp</span> <span class="ow">in</span> <span class="n">unique_exps</span><span class="p">:</span>
+        <span class="n">out_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_fld</span><span class="p">,</span> <span class="n">uq_exp</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">uq_ds</span> <span class="ow">in</span> <span class="n">unique_datasets</span><span class="p">:</span>
+            <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">subdf</span> <span class="o">=</span> <span class="n">get_overall_stats</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">uq_exp</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">uq_ds</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subdf</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NO DATA FOR &quot;</span><span class="p">,</span> <span class="n">uq_exp</span><span class="p">,</span> <span class="n">uq_ds</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">all_scores</span> <span class="o">=</span> <span class="n">subdf</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">scores_txt</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dset_map</span><span class="p">[</span><span class="n">uq_ds</span><span class="p">]</span><span class="si">}</span><span class="s2">_scores.txt&quot;</span><span class="p">)</span>
+            <span class="n">stats_txt</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dset_map</span><span class="p">[</span><span class="n">uq_ds</span><span class="p">]</span><span class="si">}</span><span class="s2">_stats.txt&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">scores_txt</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">writelines</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span> <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">all_scores</span><span class="p">])</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stats_txt</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;</span><span class="si">{:.05f}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean</span><span class="p">),</span>
+                    <span class="s2">&quot;</span><span class="si">{:.05f}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">std</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_fld</span><span class="p">,</span> <span class="s2">&quot;all_results.csv&quot;</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Anders Lauridsen, Jacob Mørk, and Jakob Olsen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

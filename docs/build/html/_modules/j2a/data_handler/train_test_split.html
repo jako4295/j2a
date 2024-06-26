@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>j2a.data_handler.train_test_split &mdash; j2a 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            j2a
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">j2a</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">j2a.data_handler.train_test_split</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for j2a.data_handler.train_test_split</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">NotRequired</span><span class="p">,</span> <span class="n">Unpack</span>
+<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypedDict</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>  <span class="c1"># type: ignore</span>
+
+<span class="kn">from</span> <span class="nn">j2a.data_handler.json_handler</span> <span class="kn">import</span> <span class="n">JsonInteractor</span>  <span class="c1"># type: ignore</span>
+
+
+<div class="viewcode-block" id="TTSTypedDict">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.train_test_split.html#j2a.data_handler.train_test_split.TTSTypedDict">[docs]</a>
+<span class="k">class</span> <span class="nc">TTSTypedDict</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TypedDict for typing on kwargs that are passed to</span>
+<span class="sd">    sklearn.model_selection.train_test_split</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">test_size</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">train_size</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">shuffle</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
+    <span class="n">stratify</span><span class="p">:</span> <span class="n">NotRequired</span><span class="p">[</span><span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="FilterJsonFileBy">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.train_test_split.html#j2a.data_handler.train_test_split.FilterJsonFileBy">[docs]</a>
+<span class="k">class</span> <span class="nc">FilterJsonFileBy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enum for filtering the json dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sound_path</span> <span class="o">=</span> <span class="s2">&quot;.mp3&quot;</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="s2">&quot;features&quot;</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="s2">&quot;metadata&quot;</span>
+    <span class="n">sound_path_wav</span> <span class="o">=</span> <span class="s2">&quot;.wav&quot;</span>
+    <span class="n">encoded_path</span> <span class="o">=</span> <span class="s2">&quot;.pt&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="TrainTestSplit">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.train_test_split.html#j2a.data_handler.train_test_split.TrainTestSplit">[docs]</a>
+<span class="k">class</span> <span class="nc">TrainTestSplit</span><span class="p">:</span>
+    <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">dict_copy</span><span class="p">:</span> <span class="nb">dict</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor for TrainTestSplit. Imports data from json file</span>
+<span class="sd">        and filters dictionary keys that do not have a filepath that</span>
+<span class="sd">        exists and ends with .mp3. It also removes keys that does</span>
+<span class="sd">        not contain any features.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        prompt_path : str</span>
+<span class="sd">            Path to a .txt file containing a prompt.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">json_obj</span><span class="p">:</span> <span class="n">JsonInteractor</span> <span class="o">=</span> <span class="n">JsonInteractor</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">json_obj</span><span class="o">.</span><span class="n">json_dict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="n">prompt_path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__filter_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filterby</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FilterJsonFileBy</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the self.dict_copy and removes keys that do not</span>
+<span class="sd">        have a filepath that exists and ends with .mp3. It also</span>
+<span class="sd">        removes keys that does not contain any features.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filtered_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">should_continue</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filterby</span><span class="p">:</span>  <span class="c1"># Guarding filterby</span>
+                <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="n">FilterJsonFileBy</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
+                        <span class="n">should_continue</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+                <span class="k">elif</span> <span class="n">f</span> <span class="ow">is</span> <span class="n">FilterJsonFileBy</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aspect_list&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">should_continue</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">should_continue</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+                        <span class="n">should_continue</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">]):</span>
+                        <span class="n">should_continue</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">should_continue</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">filtered_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span> <span class="o">=</span> <span class="n">filtered_dict</span>
+
+<div class="viewcode-block" id="TrainTestSplit.split">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.train_test_split.html#j2a.data_handler.train_test_split.TrainTestSplit.split">[docs]</a>
+    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">from_info_json</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filterby</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FilterJsonFileBy</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">validation_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Unpack</span><span class="p">[</span><span class="n">TTSTypedDict</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A wrapping function of sklearn.model_selection.train_test_split. If</span>
+<span class="sd">        from_info_json is provided then it will load this configuration and</span>
+<span class="sd">        create the train and test data equivalent to the ones created with</span>
+<span class="sd">        that configuration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        output_path : str</span>
+<span class="sd">            Path to the output directory. A folder will be created at this</span>
+<span class="sd">            location with an info.json file, a test.csv file, and train.csv file.</span>
+<span class="sd">        from_info_json : str, optional</span>
+<span class="sd">            If provided then train and test data will be created based on this.</span>
+<span class="sd">            The file is the one created by this method and is named info.json.</span>
+<span class="sd">        filterby : List[FilterJsonFileBy], optional</span>
+<span class="sd">            List of enums to filter the json dictionary by.</span>
+<span class="sd">        kwargs : dict, optional</span>
+<span class="sd">            Arguments from sklearn.model_selection.train_test_split</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">from_info_json</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">from_info_json</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">from_info_json</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">_json_kwargs</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_json_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;filterby&quot;</span><span class="p">),</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">filterby</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="nb">getattr</span><span class="p">(</span><span class="n">FilterJsonFileBy</span><span class="p">,</span> <span class="n">filt_nam</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">filt_nam</span> <span class="ow">in</span> <span class="n">_json_kwargs</span><span class="p">[</span><span class="s2">&quot;filterby&quot;</span><span class="p">]</span>
+                    <span class="p">]</span>
+
+                    <span class="k">del</span> <span class="n">_json_kwargs</span><span class="p">[</span><span class="s2">&quot;filterby&quot;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">_json_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;validation_size&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">validation_size</span> <span class="o">=</span> <span class="n">_json_kwargs</span><span class="p">[</span><span class="s2">&quot;validation_size&quot;</span><span class="p">]</span>
+                    <span class="k">del</span> <span class="n">_json_kwargs</span><span class="p">[</span><span class="s2">&quot;validation_size&quot;</span><span class="p">]</span>
+
+                <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_json_kwargs</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;from_info_json must end with .json&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">output_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+            <span class="n">output_path</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_path</span> <span class="o">=</span> <span class="n">output_path</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;random_state&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;random_state&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">69</span>
+
+        <span class="n">info_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__kwargs_to_info</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Filtering dict and removing based on filterlist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__filter_dict</span><span class="p">(</span><span class="n">filterby</span><span class="o">=</span><span class="n">filterby</span><span class="p">)</span>
+
+        <span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;filterby&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filterby</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">validation_size</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;test_size&quot;</span><span class="p">],</span> <span class="nb">float</span>
+        <span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;test_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;test_size&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">validation_size</span>
+
+        <span class="n">train_list</span><span class="p">,</span> <span class="n">test_list</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">validation_size</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;test_size&quot;</span><span class="p">],</span> <span class="nb">float</span>
+        <span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;test_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;test_size&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">validation_size</span>
+            <span class="n">sum_data_size</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;train_size&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;test_size&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">validation_size</span>
+            <span class="p">)</span>
+            <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-2</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="n">sum_data_size</span> <span class="o">&gt;=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">eps</span> <span class="ow">or</span> <span class="n">sum_data_size</span> <span class="o">&lt;=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">eps</span>
+            <span class="p">),</span> <span class="s2">&quot;Train size, test size, and validation size does not sum to one&quot;</span>
+
+            <span class="n">_val_size</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span>
+                <span class="n">validation_size</span> <span class="o">/</span> <span class="p">(</span><span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;test_size&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">validation_size</span><span class="p">),</span> <span class="mi">2</span>
+            <span class="p">)</span>
+            <span class="n">_test_size</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">_val_size</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="n">test_list</span><span class="p">,</span> <span class="n">validation_list</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+                <span class="n">test_list</span><span class="p">,</span>
+                <span class="n">train_size</span><span class="o">=</span><span class="n">_test_size</span><span class="p">,</span>
+                <span class="n">test_size</span><span class="o">=</span><span class="n">_val_size</span><span class="p">,</span>
+                <span class="n">random_state</span><span class="o">=</span><span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;random_state&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;val_size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">validation_list</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;validation_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">validation_size</span>
+
+        <span class="k">if</span> <span class="n">info_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test_size&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;test_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">info_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;train_size&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">info_dict</span><span class="p">[</span><span class="s2">&quot;train_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_list</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;test_size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test_list</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;train_size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_list</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save path:</span>
+        <span class="n">_now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">stamp</span> <span class="o">=</span> <span class="n">_now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">_%H-%M-%S&quot;</span><span class="p">)</span>
+        <span class="n">save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_path</span> <span class="o">+</span> <span class="s2">&quot;train-test_&quot;</span> <span class="o">+</span> <span class="n">stamp</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">save_path</span><span class="p">)</span>
+
+        <span class="c1"># Save info_dict to file:</span>
+        <span class="n">info_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">info_dict</span><span class="p">)</span>
+        <span class="n">info_json_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s2">&quot;info.json&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">info_json_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">info_json</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Info saved to </span><span class="si">{</span><span class="n">info_json_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__write_train_test_files</span><span class="p">(</span><span class="n">train_list</span><span class="p">,</span> <span class="n">save_path</span> <span class="o">+</span> <span class="s2">&quot;/train.csv&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__write_train_test_files</span><span class="p">(</span><span class="n">test_list</span><span class="p">,</span> <span class="n">save_path</span> <span class="o">+</span> <span class="s2">&quot;/test.csv&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">validation_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__write_train_test_files</span><span class="p">(</span>
+                <span class="n">validation_list</span><span class="p">,</span> <span class="n">save_path</span> <span class="o">+</span> <span class="s2">&quot;/validation.csv&quot;</span>
+            <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__write_train_test_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write train and test data to files</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        keys_list : list</span>
+<span class="sd">            List of names from the json database.</span>
+<span class="sd">        data_path : str</span>
+<span class="sd">            path to save</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;prompt&quot;</span><span class="p">,</span> <span class="s2">&quot;encoding&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="s2">&quot;features&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_list</span><span class="p">:</span>
+            <span class="n">_prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span>
+            <span class="n">_encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;encoded_path&quot;</span><span class="p">)</span>
+            <span class="n">_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aspect_list&quot;</span><span class="p">)</span>
+            <span class="n">_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;features&quot;</span><span class="p">)</span>
+            <span class="n">_lab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_copy</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="p">(</span>  <span class="c1"># depending on database the metadata is different.</span>
+                <span class="n">_lab</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;caption&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">_lab</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;caption&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">_lab</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                        <span class="p">[[</span><span class="n">key</span><span class="p">,</span> <span class="n">_prompt</span><span class="p">,</span> <span class="n">_encoding</span><span class="p">,</span> <span class="n">_metadata</span><span class="p">,</span> <span class="n">_features</span><span class="p">,</span> <span class="n">label</span><span class="p">]],</span>
+                        <span class="n">columns</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">df</span><span class="p">,</span>
+                <span class="p">],</span>
+                <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__kwargs_to_info</span><span class="p">(</span><span class="n">split_kwargs</span><span class="p">:</span> <span class="n">TTSTypedDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes kwargs that are passed to sklearn.model_selection.train_test_split.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        split_kwargs : dict</span>
+<span class="sd">            Arguments passed to sklearn.model_selection.train_test_split.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Not none valued dictionary items.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">info_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">split_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">info_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># If nothing is specified, then we don&#39;t save this</span>
+        <span class="k">return</span> <span class="n">info_dict</span>
+
+<div class="viewcode-block" id="TrainTestSplit.get_prompt">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.train_test_split.html#j2a.data_handler.train_test_split.TrainTestSplit.get_prompt">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load .txt file and set it as prompt</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            Path to .txt file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">(</span><span class="s2">&quot;Driver code.&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--prompt_path&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to a .txt file containing a prompt.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--output_dir&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the folder where a folder with train.csv, test.csv, and info.json is created.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">filterby</span> <span class="o">=</span> <span class="p">[</span><span class="n">FilterJsonFileBy</span><span class="o">.</span><span class="n">encoded_path</span><span class="p">,</span> <span class="n">FilterJsonFileBy</span><span class="o">.</span><span class="n">sound_path_wav</span><span class="p">]</span>
+    <span class="n">tts</span> <span class="o">=</span> <span class="n">TrainTestSplit</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">prompt_path</span><span class="p">)</span>
+    <span class="c1"># tts.split(</span>
+    <span class="c1">#     output_path=args.output_dir,</span>
+    <span class="c1">#     from_info_json=&quot;j2a/data/train/info.json&quot;,</span>
+    <span class="c1"># )</span>
+    <span class="n">tts</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+        <span class="n">filterby</span><span class="o">=</span><span class="n">filterby</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="o">=</span><span class="mi">69</span><span class="p">,</span>
+        <span class="n">train_size</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">test_size</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span>
+        <span class="n">validation_size</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Anders Lauridsen, Jacob Mørk, and Jakob Olsen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

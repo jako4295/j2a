@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>j2a.data_handler.json_handler module &mdash; j2a 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            j2a
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">j2a.data_handler.json_handler module</a><ul>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.JsonInteractor"><code class="docutils literal notranslate"><span class="pre">JsonInteractor</span></code></a><ul>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.JsonInteractor.add_feature"><code class="docutils literal notranslate"><span class="pre">JsonInteractor.add_feature()</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.JsonInteractor.add_sound_path"><code class="docutils literal notranslate"><span class="pre">JsonInteractor.add_sound_path()</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.JsonInteractor.add_sound_path_wav"><code class="docutils literal notranslate"><span class="pre">JsonInteractor.add_sound_path_wav()</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.JsonInteractor.clean_json_param"><code class="docutils literal notranslate"><span class="pre">JsonInteractor.clean_json_param()</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.JsonInteractor.get_info"><code class="docutils literal notranslate"><span class="pre">JsonInteractor.get_info()</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.JsonInteractor.json_dict"><code class="docutils literal notranslate"><span class="pre">JsonInteractor.json_dict</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.JsonInteractor.json_path"><code class="docutils literal notranslate"><span class="pre">JsonInteractor.json_path</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.JsonInteractor.save"><code class="docutils literal notranslate"><span class="pre">JsonInteractor.save()</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.JsonInteractor.update_json_paths"><code class="docutils literal notranslate"><span class="pre">JsonInteractor.update_json_paths()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.MetaData"><code class="docutils literal notranslate"><span class="pre">MetaData</span></code></a><ul>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.MetaData.full_json_file"><code class="docutils literal notranslate"><span class="pre">MetaData.full_json_file()</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.MetaData.metadata_to_json"><code class="docutils literal notranslate"><span class="pre">MetaData.metadata_to_json()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.MetaDataEnum"><code class="docutils literal notranslate"><span class="pre">MetaDataEnum</span></code></a><ul>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.MetaDataEnum.enum_attr"><code class="docutils literal notranslate"><span class="pre">MetaDataEnum.enum_attr()</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.MetaDataEnum.musiccaps"><code class="docutils literal notranslate"><span class="pre">MetaDataEnum.musiccaps</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.json_handler.MetaDataEnum.youtube_8m"><code class="docutils literal notranslate"><span class="pre">MetaDataEnum.youtube_8m</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">j2a</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">j2a.data_handler.json_handler module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/rst/j2a.data_handler.json_handler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-j2a.data_handler.json_handler">
+<span id="j2a-data-handler-json-handler-module"></span><h1>j2a.data_handler.json_handler module<a class="headerlink" href="#module-j2a.data_handler.json_handler" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.JsonInteractor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">j2a.data_handler.json_handler.</span></span><span class="sig-name descname"><span class="pre">JsonInteractor</span></span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#JsonInteractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.JsonInteractor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is used to interact with json file located
+at j2a/data_handler/.json_files/data_summary.json.</p>
+<p>If this file is not yet created please use the
+<a class="reference internal" href="#j2a.data_handler.json_handler.MetaData" title="j2a.data_handler.json_handler.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">j2a.data_handler.json_handler.MetaData</span></code></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.JsonInteractor.add_feature">
+<span class="sig-name descname"><span class="pre">add_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#JsonInteractor.add_feature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.JsonInteractor.add_feature" title="Link to this definition"></a></dt>
+<dd><p>Adds a feature to the given names. Note that the names has
+to be in the self.json_dict.</p>
+<p>This method does NOT write to file, but updates self.json_dict.
+To update the file with changes then use self.save().</p>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>name<span class="classifier">List[str] | str</span></dt><dd><p>If list of string is provided, the names has to be in the
+data_summary.json. Otherwise, the string options are “all”,
+“musiccaps”, and “youtube_8m”.</p>
+</dd>
+<dt>feature<span class="classifier">List[Any]</span></dt><dd><p>Feature to add to the data_summary.json.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
+<p>None</p>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.JsonInteractor.add_sound_path">
+<span class="sig-name descname"><span class="pre">add_sound_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sound_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#JsonInteractor.add_sound_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.JsonInteractor.add_sound_path" title="Link to this definition"></a></dt>
+<dd><p>Add a sound path to the self.json_dict.</p>
+<p>This method does NOT write to file, but updates self.json_dict.
+To update the file with changes then use self.save().</p>
+<section id="id1">
+<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>name<span class="classifier">str</span></dt><dd><p>The name has to be in self.json_dict and is the name where
+the sound path is added.</p>
+</dd>
+<dt>sound_path<span class="classifier">str</span></dt><dd><p>Please provide the absolute path to the sound file</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h2>Returns<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>None</p>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.JsonInteractor.add_sound_path_wav">
+<span class="sig-name descname"><span class="pre">add_sound_path_wav</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sound_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#JsonInteractor.add_sound_path_wav"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.JsonInteractor.add_sound_path_wav" title="Link to this definition"></a></dt>
+<dd><p>Add a sound path to the self.json_dict. The path will be added under sound_path_wav</p>
+<p>This method does NOT write to file, but updates self.json_dict.
+To update the file with changes then use self.save().</p>
+<section id="id3">
+<h2>Parameters<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>name<span class="classifier">str</span></dt><dd><p>The name has to be in self.json_dict and is the name where
+the sound path is added.</p>
+</dd>
+<dt>sound_path<span class="classifier">str</span></dt><dd><p>Please provide the absolute path to the wav sound file</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h2>Returns<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>None</p>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.JsonInteractor.clean_json_param">
+<span class="sig-name descname"><span class="pre">clean_json_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#JsonInteractor.clean_json_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.JsonInteractor.clean_json_param" title="Link to this definition"></a></dt>
+<dd><p>This method cleans a parameter from the json file.
+For instance if param=’sound_path’ then all sound_paths
+will be replaced with “”.</p>
+<section id="id5">
+<h2>Parameters<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>param<span class="classifier">str</span></dt><dd><p>The name of the parameter to be cleaned</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h2>Returns<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>None</p>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.JsonInteractor.get_info">
+<span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#JsonInteractor.get_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.JsonInteractor.get_info" title="Link to this definition"></a></dt>
+<dd><p>Get info about one or multiple elements in self.json_dict.</p>
+<section id="id7">
+<h2>Parameters<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>name<span class="classifier">str | List[str]</span></dt><dd><p>If str then it is the name of the element in self.json_dict.
+If list then it is a list of the elements in self.json_dict.</p>
+</dd>
+</dl>
+</section>
+<section id="id8">
+<h2>Returns<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p>None</p>
+</section>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.JsonInteractor.json_dict">
+<span class="sig-name descname"><span class="pre">json_dict</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#j2a.data_handler.json_handler.JsonInteractor.json_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.JsonInteractor.json_path">
+<span class="sig-name descname"><span class="pre">json_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#j2a.data_handler.json_handler.JsonInteractor.json_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.JsonInteractor.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#JsonInteractor.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.JsonInteractor.save" title="Link to this definition"></a></dt>
+<dd><p>Saves changes in self.json_dict to the file in
+j2a/data_handler/.json_files/data_summary.json</p>
+<section id="id9">
+<h2>Parameters<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>ask<span class="classifier">bool, optional</span></dt><dd><p>If True, asks the user to save the changes
+if False, any changes will be made without asking.</p>
+</dd>
+<dt>silent: bool, optional</dt><dd><p>If silent mode is on there will only be printed if ask is True</p>
+</dd>
+</dl>
+</section>
+<section id="id10">
+<h2>Returns<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<p>None</p>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.JsonInteractor.update_json_paths">
+<span class="sig-name descname"><span class="pre">update_json_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#JsonInteractor.update_json_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.JsonInteractor.update_json_paths" title="Link to this definition"></a></dt>
+<dd><p>This method updates the paths in the json file to
+the data given in data_path. It updates the paramter
+given by param (has to be “sound_path”, “sound_path_wav”,
+or “encoded_path”)
+Parameters
+———-
+data_path : Path to folder with data
+param : Name of the parameter to be updated</p>
+<section id="id11">
+<h2>Returns<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<p>None</p>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.MetaData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">j2a.data_handler.json_handler.</span></span><span class="sig-name descname"><span class="pre">MetaData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#MetaData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.MetaData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class handles metadata related to the databases specified by
+the MetaDataEnum class. Metadata is imported in the constructor
+and the method ensures that all metadata is imported correctly.</p>
+<p>MetaData.full_json_file saves the metadata from the sound files
+in a json file located at j2a/data_handler/.json_files/data_summary.json.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.MetaData.full_json_file">
+<span class="sig-name descname"><span class="pre">full_json_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#MetaData.full_json_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.MetaData.full_json_file" title="Link to this definition"></a></dt>
+<dd><p>Saves the full json file of the metadata. It is located at
+j2a/data_handler/.json_files/data_summary.json.</p>
+<dl class="simple">
+<dt>NOTE: This method should only be used to initialize the</dt><dd><p>json file because it overwrites the existing file.</p>
+</dd>
+</dl>
+<p>To interact with the json file please use the
+<a class="reference internal" href="#j2a.data_handler.json_handler.JsonInteractor" title="j2a.data_handler.json_handler.JsonInteractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">j2a.data_handler.json_handler.JsonInteractor</span></code></a></p>
+<section id="id12">
+<h2>Returns<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<p>None</p>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.MetaData.metadata_to_json">
+<span class="sig-name descname"><span class="pre">metadata_to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#j2a.data_handler.json_handler.MetaDataEnum" title="j2a.data_handler.json_handler.MetaDataEnum"><span class="pre">MetaDataEnum</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#MetaData.metadata_to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.MetaData.metadata_to_json" title="Link to this definition"></a></dt>
+<dd><p>Converts from metadata to Json str.</p>
+<section id="id13">
+<h2>Parameters<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>database<span class="classifier">MetaDataEnum</span></dt><dd><p>Name of the database in the MetaDataEnum class</p>
+</dd>
+</dl>
+</section>
+<section id="id14">
+<h2>Returns<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
+<p>The json as a string.</p>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.MetaDataEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">j2a.data_handler.json_handler.</span></span><span class="sig-name descname"><span class="pre">MetaDataEnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#MetaDataEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.MetaDataEnum" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.MetaDataEnum.enum_attr">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enum_attr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/j2a/data_handler/json_handler.html#MetaDataEnum.enum_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.json_handler.MetaDataEnum.enum_attr" title="Link to this definition"></a></dt>
+<dd><section id="id15">
+<h2>Returns<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<p>Gives all available enum items</p>
+</section>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.MetaDataEnum.musiccaps">
+<span class="sig-name descname"><span class="pre">musiccaps</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MusicCaps'</span></em><a class="headerlink" href="#j2a.data_handler.json_handler.MetaDataEnum.musiccaps" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.json_handler.MetaDataEnum.youtube_8m">
+<span class="sig-name descname"><span class="pre">youtube_8m</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'YouTube8M-MusicTextClips'</span></em><a class="headerlink" href="#j2a.data_handler.json_handler.MetaDataEnum.youtube_8m" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Anders Lauridsen, Jacob Mørk, and Jakob Olsen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

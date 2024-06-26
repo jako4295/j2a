@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>j2a.data_handler.json_handler &mdash; j2a 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            j2a
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">j2a</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">j2a.data_handler.json_handler</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for j2a.data_handler.json_handler</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">beautifultable</span>  <span class="c1"># type: ignore</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>  <span class="c1"># type: ignore</span>
+<span class="kn">import</span> <span class="nn">dictdiffer</span>  <span class="c1"># type: ignore</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+
+<div class="viewcode-block" id="MetaDataEnum">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.MetaDataEnum">[docs]</a>
+<span class="k">class</span> <span class="nc">MetaDataEnum</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">musiccaps</span> <span class="o">=</span> <span class="s2">&quot;MusicCaps&quot;</span>
+    <span class="c1"># musicnet = &quot;MusicNet&quot;</span>
+    <span class="n">youtube_8m</span> <span class="o">=</span> <span class="s2">&quot;YouTube8M-MusicTextClips&quot;</span>
+
+<div class="viewcode-block" id="MetaDataEnum.enum_attr">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.MetaDataEnum.enum_attr">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">enum_attr</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Gives all available enum items</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__members__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MetaData">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.MetaData">[docs]</a>
+<span class="k">class</span> <span class="nc">MetaData</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class handles metadata related to the databases specified by</span>
+<span class="sd">    the MetaDataEnum class. Metadata is imported in the constructor</span>
+<span class="sd">    and the method ensures that all metadata is imported correctly.</span>
+
+<span class="sd">    MetaData.full_json_file saves the metadata from the sound files</span>
+<span class="sd">    in a json file located at j2a/data_handler/.json_files/data_summary.json.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        In the folder there should be metadata from the databases defined in</span>
+<span class="sd">        MetaDataEnum.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            Path to the metadata folder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_metadata</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Imports all metadata from the path specified.</span>
+<span class="sd">        This data is accessed as attributes for this class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            Path to the metadata folder.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">MetaDataEnum</span><span class="p">]</span> <span class="o">=</span> <span class="n">MetaDataEnum</span>
+
+        <span class="k">for</span> <span class="n">database</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">enum_attr</span><span class="p">():</span>
+            <span class="k">match</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="k">case</span> <span class="s2">&quot;MusicCaps&quot;</span><span class="p">:</span>
+                    <span class="n">_filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">=</span> <span class="s2">&quot;musiccaps-public.csv&quot;</span>
+                <span class="k">case</span> <span class="s2">&quot;MusicNet&quot;</span><span class="p">:</span>
+                    <span class="n">_filename</span> <span class="o">=</span> <span class="s2">&quot;musicnet_metadata.csv&quot;</span>
+                <span class="k">case</span> <span class="s2">&quot;YouTube8M-MusicTextClips&quot;</span><span class="p">:</span>
+                    <span class="n">_filename</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;test.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;train.csv&quot;</span><span class="p">]</span>
+                <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The enums did not match the expected values&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span> <span class="o">+</span> <span class="s2">&quot;_metadata&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">_filename</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_filename</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">fil_nam</span><span class="p">)</span> <span class="k">for</span> <span class="n">fil_nam</span> <span class="ow">in</span> <span class="n">_filename</span><span class="p">]</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span> <span class="o">+</span> <span class="s2">&quot;_metadata&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+            <span class="n">_df</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span> <span class="o">+</span> <span class="s2">&quot;_metadata&quot;</span><span class="p">)</span>
+            <span class="n">_df</span><span class="p">[</span><span class="s2">&quot;_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_series</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span><span class="w"> </span><span class="n">database</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="MetaData.full_json_file">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.MetaData.full_json_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">full_json_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves the full json file of the metadata. It is located at</span>
+<span class="sd">        j2a/data_handler/.json_files/data_summary.json.</span>
+
+<span class="sd">        NOTE: This method should only be used to initialize the</span>
+<span class="sd">              json file because it overwrites the existing file.</span>
+
+<span class="sd">        To interact with the json file please use the</span>
+<span class="sd">        :class:`j2a.data_handler.json_handler.JsonInteractor`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_output_path</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/.json_files&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">/data_summary.json&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Are you sure you want to overwrite the already &quot;</span>
+                <span class="s2">&quot;existing data_summary.json? [y/n]&quot;</span>
+            <span class="p">)</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">answer</span> <span class="o">!=</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">database_enum</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">MetaDataEnum</span><span class="p">]</span> <span class="o">=</span> <span class="n">MetaDataEnum</span>
+        <span class="n">full_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">database</span> <span class="ow">in</span> <span class="n">database_enum</span><span class="o">.</span><span class="n">enum_attr</span><span class="p">():</span>
+            <span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_to_json</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">MetaDataEnum</span><span class="p">,</span> <span class="n">database</span><span class="p">))</span>
+            <span class="n">database_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+            <span class="n">full_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">database_dict</span><span class="p">)</span>
+
+        <span class="n">full_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">full_dict</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span> <span class="o">+</span> <span class="s2">&quot;/data_summary.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">full_json</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;file saved in  </span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">/data_summary.json&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MetaData.metadata_to_json">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.MetaData.metadata_to_json">[docs]</a>
+    <span class="k">def</span> <span class="nf">metadata_to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="n">MetaDataEnum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts from metadata to Json str.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        database : MetaDataEnum</span>
+<span class="sd">            Name of the database in the MetaDataEnum class</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        The json as a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_metadata&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The metadata is not instantiated yet.&quot;</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_metadata&quot;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;_name&quot;</span><span class="p">)</span>
+
+        <span class="n">df_to_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">df_to_dict</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">df_to_dict</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s2">&quot;sound_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">df_to_dict</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="n">df_to_dict</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s2">&quot;features&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">json_string</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">df_to_dict</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">json_string</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_get_fma_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For now we ignore this database, but in the future</span>
+<span class="sd">        this method might be relevant</span>
+
+<span class="sd">        Database can be found here:</span>
+<span class="sd">        https://github.com/mdeff/fma#MIT-1-ov-file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not implemented yet&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_mtg_jamendo_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For now we ignore this database, but in the future</span>
+<span class="sd">        this method might be relevant.</span>
+
+<span class="sd">        Database can be found here:</span>
+<span class="sd">        https://github.com/MTG/mtg-jamendo-dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not implemented yet&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="JsonInteractor">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.JsonInteractor">[docs]</a>
+<span class="k">class</span> <span class="nc">JsonInteractor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to interact with json file located</span>
+<span class="sd">    at j2a/data_handler/.json_files/data_summary.json.</span>
+
+<span class="sd">    If this file is not yet created please use the</span>
+<span class="sd">    :class:`j2a.data_handler.json_handler.MetaData`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">json_path</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">json_dict</span><span class="p">:</span> <span class="nb">dict</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">current_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">json_path</span> <span class="o">=</span> <span class="n">current_file</span> <span class="o">+</span> <span class="s2">&quot;/.json_files/data_summary.json&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Please download the data_summary.json. This is done &quot;</span>
+                <span class="s2">&quot;by the following lines of code: </span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;&gt;&gt;&gt; metadata: MetaData = MetaData(&#39;path/to/metadata/&#39;) </span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;&gt;&gt;&gt; metadata.full_json_file()&quot;</span>
+            <span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<div class="viewcode-block" id="JsonInteractor.clean_json_param">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.JsonInteractor.clean_json_param">[docs]</a>
+    <span class="k">def</span> <span class="nf">clean_json_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method cleans a parameter from the json file.</span>
+<span class="sd">        For instance if param=&#39;sound_path&#39; then all sound_paths</span>
+<span class="sd">        will be replaced with &quot;&quot;.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        param : str</span>
+<span class="sd">            The name of the parameter to be cleaned</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">all_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="JsonInteractor.update_json_paths">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.JsonInteractor.update_json_paths">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_json_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method updates the paths in the json file to</span>
+<span class="sd">        the data given in data_path. It updates the paramter</span>
+<span class="sd">        given by param (has to be &quot;sound_path&quot;, &quot;sound_path_wav&quot;,</span>
+<span class="sd">        or &quot;encoded_path&quot;)</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data_path : Path to folder with data</span>
+<span class="sd">        param : Name of the parameter to be updated</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">endswith</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="k">match</span> <span class="n">param</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s2">&quot;sound_path&quot;</span><span class="p">:</span>
+                <span class="n">endswith</span> <span class="o">=</span> <span class="s2">&quot;.mp3&quot;</span>
+            <span class="k">case</span> <span class="s2">&quot;sound_path_wav&quot;</span><span class="p">:</span>
+                <span class="n">endswith</span> <span class="o">=</span> <span class="s2">&quot;.wav&quot;</span>
+            <span class="k">case</span> <span class="s2">&quot;encoded_path&quot;</span><span class="p">:</span>
+                <span class="n">endswith</span> <span class="o">=</span> <span class="s2">&quot;.pt&quot;</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected param: </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filepath does not exist&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+            <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+
+        <span class="n">data_in_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">dat</span> <span class="k">for</span> <span class="n">dat</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">dat</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">endswith</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">dat</span> <span class="ow">in</span> <span class="n">data_in_path</span><span class="p">:</span>
+            <span class="n">file_nam</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">endswith</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="p">[</span><span class="n">file_nam</span><span class="p">][</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JsonInteractor.add_feature">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.JsonInteractor.add_feature">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">feature</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a feature to the given names. Note that the names has</span>
+<span class="sd">        to be in the self.json_dict.</span>
+
+<span class="sd">        This method does NOT write to file, but updates self.json_dict.</span>
+<span class="sd">        To update the file with changes then use self.save().</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : List[str] | str</span>
+<span class="sd">            If list of string is provided, the names has to be in the</span>
+<span class="sd">            data_summary.json. Otherwise, the string options are &quot;all&quot;,</span>
+<span class="sd">            &quot;musiccaps&quot;, and &quot;youtube_8m&quot;.</span>
+<span class="sd">        feature : List[Any]</span>
+<span class="sd">            Feature to add to the data_summary.json.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;len(feature) does not match len(name)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">match</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="k">case</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="k">case</span> <span class="s2">&quot;musiccaps&quot;</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="s2">&quot;musiccaps&quot;</span> <span class="ow">in</span> <span class="n">_key</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                            <span class="n">name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_key</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                <span class="k">case</span> <span class="s2">&quot;youtube_8m&quot;</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="s2">&quot;youtube8m&quot;</span> <span class="ow">in</span> <span class="n">_key</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                            <span class="n">name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_key</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The string input is not recognized.&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">nam</span><span class="p">,</span> <span class="n">feat</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="p">[</span><span class="n">nam</span><span class="p">][</span><span class="s2">&quot;features&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feat</span></div>
+
+
+<div class="viewcode-block" id="JsonInteractor.add_sound_path">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.JsonInteractor.add_sound_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_sound_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sound_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a sound path to the self.json_dict.</span>
+
+<span class="sd">        This method does NOT write to file, but updates self.json_dict.</span>
+<span class="sd">        To update the file with changes then use self.save().</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name has to be in self.json_dict and is the name where</span>
+<span class="sd">            the sound path is added.</span>
+<span class="sd">        sound_path : str</span>
+<span class="sd">            Please provide the absolute path to the sound file</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sound_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The sound path does not exist and &quot;</span>
+                <span class="s2">&quot;can therefore not be added to the data_summary.json&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># If the path is not absolute then we reformat it</span>
+        <span class="k">if</span> <span class="n">sound_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+            <span class="n">sound_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">sound_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The name does not appear in data_summary.json&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;sound_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sound_path</span></div>
+
+
+<div class="viewcode-block" id="JsonInteractor.add_sound_path_wav">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.JsonInteractor.add_sound_path_wav">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_sound_path_wav</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sound_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a sound path to the self.json_dict. The path will be added under sound_path_wav</span>
+
+<span class="sd">        This method does NOT write to file, but updates self.json_dict.</span>
+<span class="sd">        To update the file with changes then use self.save().</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name has to be in self.json_dict and is the name where</span>
+<span class="sd">            the sound path is added.</span>
+<span class="sd">        sound_path : str</span>
+<span class="sd">            Please provide the absolute path to the wav sound file</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sound_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The sound path does not exist and &quot;</span>
+                <span class="s2">&quot;can therefore not be added to the data_summary.json&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># If the path is not absolute then we reformat it</span>
+        <span class="k">if</span> <span class="n">sound_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+            <span class="n">sound_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">sound_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The name does not appear in data_summary.json&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;sound_path_wav&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sound_path</span></div>
+
+
+<div class="viewcode-block" id="JsonInteractor.get_info">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.JsonInteractor.get_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get info about one or multiple elements in self.json_dict.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str | List[str]</span>
+<span class="sd">            If str then it is the name of the element in self.json_dict.</span>
+<span class="sd">            If list then it is a list of the elements in self.json_dict.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">beautifultable</span><span class="o">.</span><span class="n">BeautifulTable</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_info</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+                <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_info</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unexpected name type&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__get_info</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="n">beautifultable</span><span class="o">.</span><span class="n">BeautifulTable</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">beautifultable</span><span class="o">.</span><span class="n">BeautifulTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Putting info from name in self.json_dict into a</span>
+<span class="sd">        beautifultable.BeautifulTable object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            It is the name of the element in self.json_dict.</span>
+<span class="sd">        table : beautifultable.BeautifulTable</span>
+<span class="sd">            Appends info about element to the given table.</span>
+<span class="sd">            the table can be empty.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        beautifultable.BeautifulTable</span>
+<span class="sd">            Updated the table from the input with info about</span>
+<span class="sd">            the element specified by name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The name does not appear in data_summary.json&quot;</span><span class="p">)</span>
+        <span class="n">dict_entrance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="n">rows_header_meta</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dict_entrance</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">rows_header_feat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dict_entrance</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="n">table</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;Info:&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">])</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;Sound file&quot;</span><span class="p">,</span> <span class="n">dict_entrance</span><span class="p">[</span><span class="s2">&quot;sound_path&quot;</span><span class="p">]])</span>
+
+        <span class="k">if</span> <span class="n">rows_header_meta</span><span class="p">:</span>
+            <span class="n">_table_meta</span> <span class="o">=</span> <span class="n">beautifultable</span><span class="o">.</span><span class="n">BeautifulTable</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">_key</span><span class="p">,</span> <span class="n">_val</span> <span class="ow">in</span> <span class="n">dict_entrance</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">_table_meta</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">_key</span><span class="p">,</span> <span class="n">_val</span><span class="p">])</span>
+
+            <span class="n">table</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;Metadata&quot;</span><span class="p">,</span> <span class="n">_table_meta</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">rows_header_feat</span><span class="p">:</span>
+            <span class="n">_table_feat</span> <span class="o">=</span> <span class="n">beautifultable</span><span class="o">.</span><span class="n">BeautifulTable</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">_key</span><span class="p">,</span> <span class="n">_val</span> <span class="ow">in</span> <span class="n">dict_entrance</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">_table_feat</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">_key</span><span class="p">,</span> <span class="n">_val</span><span class="p">])</span>
+
+            <span class="n">table</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;Features&quot;</span><span class="p">,</span> <span class="n">_table_feat</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">table</span>
+
+<div class="viewcode-block" id="JsonInteractor.save">
+<a class="viewcode-back" href="../../../rst/j2a.data_handler.json_handler.html#j2a.data_handler.json_handler.JsonInteractor.save">[docs]</a>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ask</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves changes in self.json_dict to the file in</span>
+<span class="sd">        j2a/data_handler/.json_files/data_summary.json</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ask : bool, optional</span>
+<span class="sd">            If True, asks the user to save the changes</span>
+<span class="sd">            if False, any changes will be made without asking.</span>
+<span class="sd">        silent: bool, optional</span>
+<span class="sd">            If silent mode is on there will only be printed if ask is True</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">old_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">dictdiffer_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dictdiffer</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">old_json</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dictdiffer_list</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No changes are made to data_summary.json&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">diff</span> <span class="ow">in</span> <span class="n">dictdiffer_list</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ask</span><span class="p">:</span>
+            <span class="n">json_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Are you sure you want to make the changes to the data_summary.json? [y/n]&quot;</span>
+            <span class="p">)</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+                <span class="n">json_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json_dict</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved changes to </span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">json_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No changes are made to file data_summary.json&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">MetaData</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">(</span><span class="s2">&quot;metadata/&quot;</span><span class="p">)</span>
+    <span class="n">metadata</span><span class="o">.</span><span class="n">full_json_file</span><span class="p">()</span>
+
+    <span class="n">json_obj</span><span class="p">:</span> <span class="n">JsonInteractor</span> <span class="o">=</span> <span class="n">JsonInteractor</span><span class="p">()</span>
+    <span class="n">json_obj</span><span class="o">.</span><span class="n">add_sound_path</span><span class="p">(</span><span class="s2">&quot;MusicCaps_0&quot;</span><span class="p">,</span> <span class="s2">&quot;data/MusicCaps_0.mp3&quot;</span><span class="p">)</span>
+    <span class="n">json_obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Anders Lauridsen, Jacob Mørk, and Jakob Olsen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

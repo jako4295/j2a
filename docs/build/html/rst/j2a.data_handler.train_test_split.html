@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>j2a.data_handler.train_test_split module &mdash; j2a 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            j2a
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">j2a.data_handler.train_test_split module</a><ul>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.FilterJsonFileBy"><code class="docutils literal notranslate"><span class="pre">FilterJsonFileBy</span></code></a><ul>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.FilterJsonFileBy.encoded_path"><code class="docutils literal notranslate"><span class="pre">FilterJsonFileBy.encoded_path</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.FilterJsonFileBy.features"><code class="docutils literal notranslate"><span class="pre">FilterJsonFileBy.features</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.FilterJsonFileBy.metadata"><code class="docutils literal notranslate"><span class="pre">FilterJsonFileBy.metadata</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.FilterJsonFileBy.sound_path"><code class="docutils literal notranslate"><span class="pre">FilterJsonFileBy.sound_path</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.FilterJsonFileBy.sound_path_wav"><code class="docutils literal notranslate"><span class="pre">FilterJsonFileBy.sound_path_wav</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.TTSTypedDict"><code class="docutils literal notranslate"><span class="pre">TTSTypedDict</span></code></a><ul>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.TTSTypedDict.random_state"><code class="docutils literal notranslate"><span class="pre">TTSTypedDict.random_state</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.TTSTypedDict.shuffle"><code class="docutils literal notranslate"><span class="pre">TTSTypedDict.shuffle</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.TTSTypedDict.stratify"><code class="docutils literal notranslate"><span class="pre">TTSTypedDict.stratify</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.TTSTypedDict.test_size"><code class="docutils literal notranslate"><span class="pre">TTSTypedDict.test_size</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.TTSTypedDict.train_size"><code class="docutils literal notranslate"><span class="pre">TTSTypedDict.train_size</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.TrainTestSplit"><code class="docutils literal notranslate"><span class="pre">TrainTestSplit</span></code></a><ul>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.TrainTestSplit.dict_copy"><code class="docutils literal notranslate"><span class="pre">TrainTestSplit.dict_copy</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.TrainTestSplit.get_prompt"><code class="docutils literal notranslate"><span class="pre">TrainTestSplit.get_prompt()</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.TrainTestSplit.output_path"><code class="docutils literal notranslate"><span class="pre">TrainTestSplit.output_path</span></code></a></li>
+<li><a class="reference internal" href="#j2a.data_handler.train_test_split.TrainTestSplit.split"><code class="docutils literal notranslate"><span class="pre">TrainTestSplit.split()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">j2a</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">j2a.data_handler.train_test_split module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/rst/j2a.data_handler.train_test_split.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-j2a.data_handler.train_test_split">
+<span id="j2a-data-handler-train-test-split-module"></span><h1>j2a.data_handler.train_test_split module<a class="headerlink" href="#module-j2a.data_handler.train_test_split" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.FilterJsonFileBy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">j2a.data_handler.train_test_split.</span></span><span class="sig-name descname"><span class="pre">FilterJsonFileBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/j2a/data_handler/train_test_split.html#FilterJsonFileBy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.train_test_split.FilterJsonFileBy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enum for filtering the json dictionary.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.FilterJsonFileBy.encoded_path">
+<span class="sig-name descname"><span class="pre">encoded_path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.pt'</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.FilterJsonFileBy.encoded_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.FilterJsonFileBy.features">
+<span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'features'</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.FilterJsonFileBy.features" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.FilterJsonFileBy.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'metadata'</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.FilterJsonFileBy.metadata" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.FilterJsonFileBy.sound_path">
+<span class="sig-name descname"><span class="pre">sound_path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.mp3'</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.FilterJsonFileBy.sound_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.FilterJsonFileBy.sound_path_wav">
+<span class="sig-name descname"><span class="pre">sound_path_wav</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.wav'</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.FilterJsonFileBy.sound_path_wav" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.TTSTypedDict">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">j2a.data_handler.train_test_split.</span></span><span class="sig-name descname"><span class="pre">TTSTypedDict</span></span><a class="reference internal" href="../_modules/j2a/data_handler/train_test_split.html#TTSTypedDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.train_test_split.TTSTypedDict" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></p>
+<p>TypedDict for typing on kwargs that are passed to
+sklearn.model_selection.train_test_split</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.TTSTypedDict.random_state">
+<span class="sig-name descname"><span class="pre">random_state</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.TTSTypedDict.random_state" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.TTSTypedDict.shuffle">
+<span class="sig-name descname"><span class="pre">shuffle</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.TTSTypedDict.shuffle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.TTSTypedDict.stratify">
+<span class="sig-name descname"><span class="pre">stratify</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Buffer</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.TTSTypedDict.stratify" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.TTSTypedDict.test_size">
+<span class="sig-name descname"><span class="pre">test_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.TTSTypedDict.test_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.TTSTypedDict.train_size">
+<span class="sig-name descname"><span class="pre">train_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.TTSTypedDict.train_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.TrainTestSplit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">j2a.data_handler.train_test_split.</span></span><span class="sig-name descname"><span class="pre">TrainTestSplit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/j2a/data_handler/train_test_split.html#TrainTestSplit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.train_test_split.TrainTestSplit" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.TrainTestSplit.dict_copy">
+<span class="sig-name descname"><span class="pre">dict_copy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.TrainTestSplit.dict_copy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.TrainTestSplit.get_prompt">
+<span class="sig-name descname"><span class="pre">get_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/j2a/data_handler/train_test_split.html#TrainTestSplit.get_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.train_test_split.TrainTestSplit.get_prompt" title="Link to this definition"></a></dt>
+<dd><p>Load .txt file and set it as prompt</p>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>path<span class="classifier">str</span></dt><dd><p>Path to .txt file.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.TrainTestSplit.output_path">
+<span class="sig-name descname"><span class="pre">output_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#j2a.data_handler.train_test_split.TrainTestSplit.output_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j2a.data_handler.train_test_split.TrainTestSplit.split">
+<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_info_json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filterby</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#j2a.data_handler.train_test_split.FilterJsonFileBy" title="j2a.data_handler.train_test_split.FilterJsonFileBy"><span class="pre">FilterJsonFileBy</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Unpack</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#j2a.data_handler.train_test_split.TTSTypedDict" title="j2a.data_handler.train_test_split.TTSTypedDict"><span class="pre">TTSTypedDict</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/j2a/data_handler/train_test_split.html#TrainTestSplit.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j2a.data_handler.train_test_split.TrainTestSplit.split" title="Link to this definition"></a></dt>
+<dd><p>A wrapping function of sklearn.model_selection.train_test_split. If
+from_info_json is provided then it will load this configuration and
+create the train and test data equivalent to the ones created with
+that configuration.</p>
+<section id="id1">
+<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>output_path<span class="classifier">str</span></dt><dd><p>Path to the output directory. A folder will be created at this
+location with an info.json file, a test.csv file, and train.csv file.</p>
+</dd>
+<dt>from_info_json<span class="classifier">str, optional</span></dt><dd><p>If provided then train and test data will be created based on this.
+The file is the one created by this method and is named info.json.</p>
+</dd>
+<dt>filterby<span class="classifier">List[FilterJsonFileBy], optional</span></dt><dd><p>List of enums to filter the json dictionary by.</p>
+</dd>
+<dt>kwargs<span class="classifier">dict, optional</span></dt><dd><p>Arguments from sklearn.model_selection.train_test_split</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
+<p>None</p>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Anders Lauridsen, Jacob Mørk, and Jakob Olsen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
