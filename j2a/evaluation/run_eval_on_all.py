@@ -1,19 +1,17 @@
-from contextlib import contextmanager
-from typing import Any, List
-import numpy as np  # type: ignore
-from pathlib import Path
 from argparse import ArgumentParser
+from contextlib import contextmanager
+from pathlib import Path
+from typing import Any, List
 
+import numpy as np  # type: ignore
 import torch  # type: ignore
 import torch.nn as nn  # type: ignore
 from torch import Tensor
-from torch.utils.data import DataLoader  # type: ignore
 from torch.amp import autocast  # type: ignore
+from torch.utils.data import DataLoader  # type: ignore
 
-from j2a.dataset import MusicDataset
-from j2a.model import Model
-from j2a.dataset import Batch
-from j2a.model import Model, AudioProjector, AudioProjectorNoPool, load_llm
+from j2a.dataset import Batch, MusicDataset
+from j2a.model import AudioProjector, AudioProjectorNoPool, Model, load_llm
 
 
 def status_update_line(status: str) -> str:

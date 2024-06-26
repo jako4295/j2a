@@ -4,12 +4,28 @@ import torch  # type: ignore
 
 torch.backends.cuda.matmul.allow_tf32 = True
 
-from j2a.model import Model, AudioProjector, AudioProjectorNoPool, load_llm
 from j2a.dataset import MusicDataset
+from j2a.model import AudioProjector, AudioProjectorNoPool, Model, load_llm
 from j2a.trainer.train_cfg import TrainerCfg
 from j2a.trainer.trainer import Trainer
 
 parser = ArgumentParser("Driver code.")
+
+parser.add_argument(
+    "--load_projector_path",
+    type=str,
+    required=False,
+    default=None,
+    help=f"Path to pretrained projector weights (.pth file).",
+)
+
+parser.add_argument(
+    "--load_llm_path",
+    type=str,
+    required=False,
+    default=None,
+    help=f"Path to local pretrained llm weights (folder)",
+)
 
 parser.add_argument(
     "--train_path",
@@ -41,6 +57,14 @@ parser.add_argument(
     help="Model name to be used for predictions",
 )
 
+parser.add_argument(
+    "--update_llm",
+    type=bool,
+    required=False,
+    default=False,
+    help=f"If true the weights of the llm will be updated and saved",
+)
+
 args = parser.parse_args()
 
 # Access the values of the arguments
@@ -68,7 +92,16 @@ else:
     raise ValueError("Invalid model name")
 
 audio_projector.to(tr_cfg.device)
-model = Model(audio_projector.to(torch.bfloat16), llm, False)
+model = Model(audio_projector.to(torch.bfloat16), llm, args.update_llm)
+
+load_prjector_path = args.load_projector_path
+load_llm_path = args.load_llm_path
+if load_prjector_path:
+    model.load_projector_from_path(load_prjector_path)
+
+if load_llm_path:
+    model.load_llm_from_path(load_llm_path)
+
 
 train_path = args.train_path
 eval_path = args.eval_path

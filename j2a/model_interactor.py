@@ -1,36 +1,43 @@
 from argparse import ArgumentParser
+from pathlib import Path
 from typing import List
 
 import torch  # type: ignore
 from torch import Tensor
-
-from transformers import (  # type: ignore
-    AutoTokenizer,
+from tqdm import tqdm  # type: ignore
+from transformers import (
     AutoModelForCausalLM,
+    AutoTokenizer,  # type: ignore
     BitsAndBytesConfig,
-    TrainingArguments,
-    Trainer,
     DataCollatorForLanguageModeling,
-)  # type: ignore
+    Trainer,
+    TrainingArguments,
+)
 
-from j2a.encoder.encode import Encoder
 from j2a.dataset import end_template, text_2_ids_and_attention_mask
-from j2a.model import Model, load_llm, AudioProjector, AudioProjectorNoPool
-from j2a.trainer.train_cfg import TrainerCfg
+from j2a.encoder.encode import Encoder
+from j2a.model import AudioProjector, AudioProjectorNoPool, Model, load_llm
 from j2a.trainer.save_cfg import SaveCfg
-from tqdm import tqdm  #  type: ignore
+from j2a.trainer.train_cfg import TrainerCfg
 
 
 class ModelInteractor:
-    def __init__(self, model: Model, model_path: str, device: str = "cuda") -> None:
+    def __init__(
+        self,
+        model: Model,
+        projector_path: str | Path,
+        llm_path: str | Path | None = None,
+        device: str = "cuda",
+    ) -> None:
         self.device = device
         self.model = model
-        self.model.load(model_path)
+        self.model.load_projector_from_path(projector_path)
+        if llm_path:
+            self.model.load_llm_from_path(llm_path)
 
         self.tokenizer = AutoTokenizer.from_pretrained("Open-Orca/Mistral-7B-OpenOrca")
 
     def encode(self, wav_file: str):
-
         encoding_obj = Encoder()
         encoding = encoding_obj.encode_to_tensor(wav_file)
         encoding_shape = encoding.shape
@@ -162,7 +169,6 @@ class ModelInteractor:
 
 
 if __name__ == "__main__":
-
     parser = ArgumentParser("Driver code.")
 
     parser.add_argument(
@@ -231,7 +237,7 @@ if __name__ == "__main__":
     audio_projections.to(tr_cfg.device)
     model = Model(audio_projections.to(torch.bfloat16), llm, False)
 
-    model_interactor = ModelInteractor(model, model_path=model_path, device=device)
+    model_interactor = ModelInteractor(model, projector_path=model_path, device=device)
 
     sample = model_interactor.get_sample(wav_file=wav_file, prompt=prompt)
 
